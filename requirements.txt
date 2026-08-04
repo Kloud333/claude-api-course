@@ -1,0 +1,9 @@
+# Базові залежності — з модуля "Making a Request"
+anthropic
+python-dotenv
+jupyter
+ipykernel
+
+# Далі по курсу додаватимемо сюди (за потреби):
+# voyageai        — Text Embeddings / RAG
+# rank-bm25       — BM25 Lexical Search
