@@ -46,8 +46,13 @@ claude-api-course/
 ## 📌 Статус
 
 - [x] `01_accessing_the_api.ipynb` — setup + перший запит + розбір відповіді
-- [ ] `02_multi_turn_conversations.ipynb` — наступний модуль
+- [x] `02_multi_turn_conversations.ipynb` — helper-функції (`add_user_message`, `add_assistant_message`, `chat`) + приклад "зламаної" розмови без history vs правильної
+- [ ] `03_system_prompts_and_temperature.ipynb` — наступний модуль
 - [ ] ...решта notebooks додаватимуться по одному, синхронно з проходженням курсу
+
+`helpers/chat_utils.py` тепер містить 3 базові функції (client, model,
+`add_user_message`, `add_assistant_message`, `chat`) — наступні notebooks
+імпортують їх звідси.
 
 > 💡 **Принцип той самий, що й у `cli_project`/`mcp-server-demo`**: структура росте
 > поступово, модуль за модулем, а не вся одразу. `helpers/chat_utils.py` буде
