@@ -45,5 +45,15 @@ def chat(messages):
         max_tokens=1000,
         messages=messages,
     )
-    # content[0] — перший блок відповіді; .text — власне згенерований текст
-    return message.content[0].text
+
+    # ⚠️ ВАЖЛИВО: Claude Sonnet 5 має adaptive thinking УВІМКНЕНИЙ за
+    # замовчуванням — модель сама вирішує, чи "думати" перед відповіддю.
+    # Коли думає, message.content МІСТИТЬ ThinkingBlock (без .text!) —
+    # часто ПЕРШИМ блоком. Тому content[0] НЕ можна брати наосліп —
+    # треба шукати саме текстовий блок за полем type.
+    for block in message.content:
+        if block.type == "text":
+            return block.text
+
+    # Якщо текстового блоку взагалі немає (малоймовірно, але про всяк)
+    raise ValueError(f"No text block found in response: {message.content}")

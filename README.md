@@ -47,7 +47,8 @@ claude-api-course/
 
 - [x] `01_accessing_the_api.ipynb` — setup + перший запит + розбір відповіді
 - [x] `02_multi_turn_conversations.ipynb` — helper-функції (`add_user_message`, `add_assistant_message`, `chat`) + приклад "зламаної" розмови без history vs правильної
-- [ ] `03_system_prompts_and_temperature.ipynb` — наступний модуль
+- [x] `03_chat_exercise.ipynb` — вправа: чат-бот на `while True` + `input()`, + бонусна версія з командою виходу
+- [ ] `04_system_prompts_and_temperature.ipynb` — наступний модуль
 - [ ] ...решта notebooks додаватимуться по одному, синхронно з проходженням курсу
 
 `helpers/chat_utils.py` тепер містить 3 базові функції (client, model,
