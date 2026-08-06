@@ -2,9 +2,8 @@
 # модулем. Пізніші notebooks (RAG, Tool Use, Agents) імпортують звідси
 # замість копіювання коду в кожен notebook.
 #
-# СТАТУС: з модуля "Multi-Turn Conversations" — базові 3 функції.
-# Далі буде розширюватись (Tool Use змінить chat(), додасть tool-related
-# helpers; RAG додасть retrieval-функції тощо).
+# СТАТУС: з модуля "System Prompts" — chat() тепер приймає опціональний
+# параметр system.
 
 from anthropic import Anthropic
 
@@ -34,17 +33,22 @@ def add_assistant_message(messages, text):
     messages.append(assistant_message)
 
 
-def chat(messages):
-    """Шле весь список messages до Claude і повертає тільки текст відповіді.
+def chat(messages, system=None):
+    """Шле messages (+ опційно system prompt) до Claude, повертає текст.
 
-    Приймає ПОВНУ історію розмови (не тільки останнє повідомлення) —
-    саме так Claude "бачить" контекст попередніх обмінів.
+    system=None за замовчуванням — і саме тому нижче умовний if, а не
+    просто params["system"] = system: Anthropic API НЕ приймає system=None
+    явно, параметр треба зовсім не передавати, якщо він не потрібен.
     """
-    message = client.messages.create(
-        model=model,
-        max_tokens=1000,
-        messages=messages,
-    )
+    params = {
+        "model": model,
+        "max_tokens": 1000,
+        "messages": messages,
+    }
+    if system:
+        params["system"] = system
+
+    message = client.messages.create(**params)
 
     # ⚠️ ВАЖЛИВО: Claude Sonnet 5 має adaptive thinking УВІМКНЕНИЙ за
     # замовчуванням — модель сама вирішує, чи "думати" перед відповіддю.

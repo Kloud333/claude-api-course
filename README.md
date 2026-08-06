@@ -24,10 +24,18 @@ pip install -r requirements.txt
 (див. модуль "Getting an API key" у шпаргалці, якщо забув як отримати).
 
 **Запуск Jupyter:**
+
+**Варіант A — прямо у VSCode (рекомендую, без браузера):**
+Просто відкрий будь-який `.ipynb` з `notebooks/` подвійним кліком у Explorer.
+VSCode запропонує обрати kernel ("Select Kernel", правий верхній кут) —
+обери `.venv` (той, що зі ★). Клітинки виконуються прямо в редакторі.
+
+**Варіант B — класичний Jupyter у браузері:**
 ```bash
 jupyter notebook
 ```
-Відкриється браузер → перейди в `notebooks/` → відкрий потрібний файл.
+Відкриє браузер на `localhost:8888`. **Не змішуй з варіантом A** —
+якщо вже відкрив notebook у VSCode, не запускай цю команду одночасно.
 
 ## 📁 Структура
 
@@ -48,7 +56,8 @@ claude-api-course/
 - [x] `01_accessing_the_api.ipynb` — setup + перший запит + розбір відповіді
 - [x] `02_multi_turn_conversations.ipynb` — helper-функції (`add_user_message`, `add_assistant_message`, `chat`) + приклад "зламаної" розмови без history vs правильної
 - [x] `03_chat_exercise.ipynb` — вправа: чат-бот на `while True` + `input()`, + бонусна версія з командою виходу
-- [ ] `04_system_prompts_and_temperature.ipynb` — наступний модуль
+- [x] `04_system_prompts.ipynb` — math tutor приклад (з/без system prompt), `chat()` тепер приймає `system=None` + System Prompts Exercise (concise code style)
+- [ ] `05_temperature.ipynb` — наступний модуль
 - [ ] ...решта notebooks додаватимуться по одному, синхронно з проходженням курсу
 
 `helpers/chat_utils.py` тепер містить 3 базові функції (client, model,
