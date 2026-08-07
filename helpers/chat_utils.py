@@ -2,8 +2,8 @@
 # модулем. Пізніші notebooks (RAG, Tool Use, Agents) імпортують звідси
 # замість копіювання коду в кожен notebook.
 #
-# СТАТУС: з модуля "Temperature" — chat() тепер приймає temperature
-# (опціонально!) і дозволяє override моделі для конкретного виклику.
+# СТАТУС: з модуля "Structured Data" — chat() приймає stop_sequences
+# І output_config (сучасна заміна prefill для Sonnet 5+).
 
 from anthropic import Anthropic
 
@@ -28,27 +28,44 @@ def add_assistant_message(messages, text):
 
     Викликається ПІСЛЯ отримання відповіді від chat() — щоб Claude в
     наступному запиті "пам'ятав", що сам щойно сказав.
+
+    ⚠️ Також використовувалась для pre-filling (вручну підставити "початок"
+    відповіді асистента). З Claude Sonnet 5 (і будь-якою моделлю новішою
+    за 4.5) prefill БІЛЬШЕ НЕ ПІДТРИМУЄТЬСЯ — API вимагає, щоб розмова
+    завжди закінчувалась user message. Для prefill-техніки потрібен
+    model_override на старшу модель (див. chat()) або сучасна заміна —
+    output_config (теж нижче).
     """
     assistant_message = {"role": "assistant", "content": text}
     messages.append(assistant_message)
 
 
-def chat(messages, system=None, temperature=None, model_override=None):
-    """Шле messages (+ опційно system, temperature) до Claude, повертає текст.
+def chat(
+    messages,
+    system=None,
+    temperature=None,
+    stop_sequences=None,
+    output_config=None,
+    model_override=None,
+):
+    """Шле messages до Claude, повертає текст. Усі опції — опціональні.
 
-    system=None і temperature=None за замовчуванням — ОБИДВА передаються
-    в params, тільки якщо реально задані. Причина для temperature —
-    ЖОРСТКІША за system:
+    ⚠️ ДВІ РЕЧІ, ЯКІ НЕ ПРАЦЮЮТЬ З CLAUDE SONNET 5 (модель новіша за 4.6):
+    1. temperature — параметр повністю деприкейтений, кидає 400 з будь-яким
+       значенням. Обхід: model_override="claude-sonnet-4-5-20250929".
+    2. Assistant message prefill (messages, що закінчуються role="assistant")
+       — теж кидає 400: "This model does not support assistant message
+       prefill. The conversation must end with a user message."
+       Обхід А (як у курсі): той самий model_override на старшу модель.
+       Обхід Б (сучасний, рекомендований Anthropic): output_config замість
+       prefill+stop_sequences — див. приклад нижче.
 
-    ⚠️ Claude Sonnet 5 (і будь-яка модель новіша за Opus 4.6) ПОВНІСТЮ
-    деприкейтила temperature/top_p/top_k — сам факт наявності поля
-    "temperature" у запиті (навіть =1.0!) кидає 400 BadRequestError
-    "temperature is deprecated for this model". Ці моделі керують
-    варіативністю самі, через adaptive thinking, без зовнішньої "крутилки".
-
-    Якщо реально треба продемонструвати ефект temperature — передай
-    model_override на модель, що ЩЕ підтримує параметр, напр.
-    "claude-sonnet-4-5-20250929".
+    output_config: dict формату
+        {"format": {"type": "json_schema", "schema": {...звичайна JSON schema...}}}
+    — гарантує (schema-validated), що відповідь буде валідним JSON за
+    заданою схемою. Це офіційна заміна prefill-техніки для Claude 4.6+.
+    ⚠️ schema вимагає "additionalProperties": False на КОЖНОМУ object-рівні
+    (і верхньому, і вкладених) + усі properties в "required" — інакше 400.
     """
     params = {
         "model": model_override or model,
@@ -59,6 +76,10 @@ def chat(messages, system=None, temperature=None, model_override=None):
         params["system"] = system
     if temperature is not None:
         params["temperature"] = temperature
+    if stop_sequences:
+        params["stop_sequences"] = stop_sequences
+    if output_config:
+        params["output_config"] = output_config
 
     message = client.messages.create(**params)
 

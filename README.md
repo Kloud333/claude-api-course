@@ -59,7 +59,8 @@ claude-api-course/
 - [x] `04_system_prompts.ipynb` — math tutor приклад (з/без system prompt), `chat()` тепер приймає `system=None` + System Prompts Exercise (concise code style)
 - [x] `05_temperature.ipynb` — low vs high temperature на генерації сюжетів фільму, `chat()` тепер приймає `temperature=1.0`
 - [x] `06_response_streaming.ipynb` — сирі events, спрощений text_stream, get_final_message() (напряму через client/model — стрімінг має власну структуру виклику, не через chat())
-- [ ] `07_structured_data.ipynb` — наступний модуль
+- [x] `07_structured_data.ipynb` — pre-fill + stop_sequences на EventBridge JSON-прикладі (⚠️ виправлено: Sonnet 5 не підтримує prefill, обхід через `model_override` + бонусний сучасний `output_config`), `chat()` тепер приймає `stop_sequences` і `output_config`
+- [ ] `08_prompt_evaluation.ipynb` — наступний модуль
 - [ ] ...решта notebooks додаватимуться по одному, синхронно з проходженням курсу
 
 `helpers/chat_utils.py` тепер містить 3 базові функції (client, model,
