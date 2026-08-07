@@ -2,8 +2,8 @@
 # модулем. Пізніші notebooks (RAG, Tool Use, Agents) імпортують звідси
 # замість копіювання коду в кожен notebook.
 #
-# СТАТУС: з модуля "System Prompts" — chat() тепер приймає опціональний
-# параметр system.
+# СТАТУС: з модуля "Temperature" — chat() тепер приймає temperature
+# (опціонально!) і дозволяє override моделі для конкретного виклику.
 
 from anthropic import Anthropic
 
@@ -33,20 +33,32 @@ def add_assistant_message(messages, text):
     messages.append(assistant_message)
 
 
-def chat(messages, system=None):
-    """Шле messages (+ опційно system prompt) до Claude, повертає текст.
+def chat(messages, system=None, temperature=None, model_override=None):
+    """Шле messages (+ опційно system, temperature) до Claude, повертає текст.
 
-    system=None за замовчуванням — і саме тому нижче умовний if, а не
-    просто params["system"] = system: Anthropic API НЕ приймає system=None
-    явно, параметр треба зовсім не передавати, якщо він не потрібен.
+    system=None і temperature=None за замовчуванням — ОБИДВА передаються
+    в params, тільки якщо реально задані. Причина для temperature —
+    ЖОРСТКІША за system:
+
+    ⚠️ Claude Sonnet 5 (і будь-яка модель новіша за Opus 4.6) ПОВНІСТЮ
+    деприкейтила temperature/top_p/top_k — сам факт наявності поля
+    "temperature" у запиті (навіть =1.0!) кидає 400 BadRequestError
+    "temperature is deprecated for this model". Ці моделі керують
+    варіативністю самі, через adaptive thinking, без зовнішньої "крутилки".
+
+    Якщо реально треба продемонструвати ефект temperature — передай
+    model_override на модель, що ЩЕ підтримує параметр, напр.
+    "claude-sonnet-4-5-20250929".
     """
     params = {
-        "model": model,
+        "model": model_override or model,
         "max_tokens": 1000,
         "messages": messages,
     }
     if system:
         params["system"] = system
+    if temperature is not None:
+        params["temperature"] = temperature
 
     message = client.messages.create(**params)
 
