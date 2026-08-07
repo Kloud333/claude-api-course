@@ -58,7 +58,8 @@ claude-api-course/
 - [x] `03_chat_exercise.ipynb` — вправа: чат-бот на `while True` + `input()`, + бонусна версія з командою виходу
 - [x] `04_system_prompts.ipynb` — math tutor приклад (з/без system prompt), `chat()` тепер приймає `system=None` + System Prompts Exercise (concise code style)
 - [x] `05_temperature.ipynb` — low vs high temperature на генерації сюжетів фільму, `chat()` тепер приймає `temperature=1.0`
-- [ ] `06_response_streaming.ipynb` — наступний модуль
+- [x] `06_response_streaming.ipynb` — сирі events, спрощений text_stream, get_final_message() (напряму через client/model — стрімінг має власну структуру виклику, не через chat())
+- [ ] `07_structured_data.ipynb` — наступний модуль
 - [ ] ...решта notebooks додаватимуться по одному, синхронно з проходженням курсу
 
 `helpers/chat_utils.py` тепер містить 3 базові функції (client, model,
